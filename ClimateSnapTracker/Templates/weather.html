@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Info</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('https://media.istockphoto.com/id/498478219/photo/stars-at-night-sky.jpg?b=1&s=612x612&w=0&k=20&c=JtQpCgYYSyiF63fgKDtsa8fSvVhf_QjkSN_Y0gIiICs=');
+            background-size: cover; /* Cover the entire page */
+            background-position: center; /* Center the image */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-repeat: no-repeat; /* Prevent repeating the image */
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background for contrast */
+            overflow: hidden;
+        }
+        .weather-box {
+            width: 300px; /* Fixed width for the current weather box */
+            background-color: #4a90e2; /* Stylish background color */
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around; /* Adjusts spacing */
+            height: 250px; /* Set a fixed height for the current weather box */
+        }
+        h2 {
+            margin: 10px 0;
+            font-size: 24px;
+        }
+        .forecast-box {
+            flex: 1; /* Make the forecast box take remaining space */
+            background-color: #f8f9fa; /* Light background color for contrast */
+            border-radius: 10px;
+            padding: 20px;
+            margin-left: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 600px; /* Increase height for forecast box */
+            overflow-y: auto; /* Allows scrolling if content exceeds height */
+        }
+        .forecast-box h2 {
+            color: #343a40; /* Darker color for title */
+        }
+        .error-message {
+            color: #dc3545; /* Red color for error messages */
+            font-weight: bold;
+        }
+        .forecast-datetime {
+            font-size: 16px; /* Slightly larger font size for clarity */
+            margin-bottom: 5px; /* Add some space below */
+            color: #4a90e2; /* Use the same color as the title for consistency */
+        }
+        .graph-container {
+            width: 100%; /* Ensure the graph takes full width */
+            height: 350px; /* Set a height for the graph */
+            margin-top: 20px; /* Space between the title and the graph */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="weather-box">
+            <h2>Current Weather in {{ current_weather_data.get('country', 'Unknown') }}</h2>
+            {% if 'error' in current_weather_data %}
+                <p class="error-message">{{ current_weather_data['error'] }}</p>
+            {% else %}
+                <p><strong>Temperature:</strong> {{ current_weather_data.get('temperature', 'N/A') }} °C</p>
+                <p><strong>Wind Speed:</strong> {{ current_weather_data.get('windspeed', 'N/A') }} km/h</p>
+                <p><strong>Wind Direction:</strong> {{ current_weather_data.get('winddirection', 'N/A') }}°</p>
+            {% endif %}
+        </div>
+        <div class="forecast-box">
+            <h2>Temperature Forecast</h2>
+            {% for time in forecast_data %}
+                <p class="forecast-datetime">{{ time['date'] }} - {{ time['time'] }}</p>
+                <p><strong>Temperature:</strong> {{ time['temperature'] }} °C</p>
+            {% endfor %}
+            <div class="graph-container">{{ forecast_graph_html | safe }}</div>
+        </div>
+    </div>
+</body>
+</html>

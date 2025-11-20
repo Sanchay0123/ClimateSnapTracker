@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather in {{ city_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 900px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        .current-weather, .forecast {
+            margin-top: 20px;
+        }
+        .forecast-graph {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather in {{ city_name }}</h1>
+
+        <div class="current-weather">
+            <h2>Current Weather</h2>
+            {% if current_weather %}
+                <p><strong>Temperature:</strong> {{ current_weather.temperature }} °C</p>
+                <p><strong>Wind Speed:</strong> {{ current_weather.windspeed }} km/h</p>
+                <p><strong>Wind Direction:</strong> {{ current_weather.winddirection }}°</p>
+            {% else %}
+                <p>Weather data for {{ city_name }} is currently unavailable.</p>
+            {% endif %}
+        </div>
+
+        <div class="forecast">
+            <h2>7-Day Weather Forecast</h2>
+            <div class="forecast-graph" id="forecastGraph"></div>
+        </div>
+
+        <a href="/globe">Back to Globe</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use JSON.stringify to safely pass data from Jinja to JavaScript
+            const dates = JSON.parse('{{ forecast_data.get("time", []) | tojson | safe }}');
+            const tempMax = JSON.parse('{{ forecast_data.get("temperature_2m_max", []) | tojson | safe }}');
+            const tempMin = JSON.parse('{{ forecast_data.get("temperature_2m_min", []) | tojson | safe }}');
+    
+            const data = [
+                {
+                    x: dates,
+                    y: tempMax,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Max Temp (°C)',
+                    line: { color: 'red' }
+                },
+                {
+                    x: dates,
+                    y: tempMin,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Min Temp (°C)',
+                    line: { color: 'blue' }
+                }
+            ];
+    
+            const layout = {
+                title: '7-Day Temperature Forecast',
+                xaxis: { title: 'Date' },
+                yaxis: { title: 'Temperature (°C)' },
+                margin: { t: 30, l: 50, r: 50, b: 50 }
+            };
+    
+            Plotly.newPlot('forecastGraph', data, layout);
+        });
+    </script>
+    
+</body>
+</html>
